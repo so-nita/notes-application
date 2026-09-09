@@ -1,3 +1,4 @@
+
 IF DB_ID('NoteAppDb') IS null
 BEGIN
     CREATE DATABASE NoteAppDb;
