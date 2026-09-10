@@ -1,4 +1,4 @@
-import {UserDto} from "../types";
+import type {UserDto} from "../types";
 
 const TOKEN_KEY = 'note_app.access_token'
 const USER_KEY = 'note_app.user'

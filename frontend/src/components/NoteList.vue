@@ -8,9 +8,12 @@ import {useRouter} from "vue-router";
 import {computed, onMounted, ref} from "vue";
 import {storeToRefs} from "pinia";
 // import Toast from "@/components/ui/Toast.vue";
-import Alert from "@/components/ui/Alert.vue";
+// import Alert from "@/components/ui/Alert.vue";
 import ConfirmModal from "@/components/ui/ConfirmModal.vue";
 import type {Note} from "@/types";
+import NoteToolbar from "@/components/NoteToolbar.vue";
+import NoteDetailModal from "@/components/ui/NoteDetailModal.vue";
+import NoteCreateUpdateModal from "@/components/ui/NoteCreateUpdateModal.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -26,23 +29,57 @@ onMounted(() => {
   noteStore.fetchNotesAsync();
 })
 
+const detailNote = computed(() => detailTarget.value
+    ? (noteStore.notes?.find((note) => note.id === detailTarget.value?.id) ?? null)
+    : null
+)
+
 const logout = () => {
   authStore.logout();
   noteStore.reset();
   router.replace({name: "login"});
 }
 
-const openCreate = () => {}
-const confirmDelete = () => {}
-const openEdit = (note: Note) => {
-  console.log(note);
+const openCreate = () => {
+  editorTarget.value = null
+  editorError.value = null
+  editorOpen.value = true
 }
-const saveNote = () => {}
 
-const detailNote = computed(() => detailTarget.value
-        ? (noteStore.notes?.find((note) => note.id === detailTarget.value?.id) ?? null)
-        : null
-)
+const openEdit = (note: Note) => {
+  editorTarget.value = note
+  editorError.value = null
+  editorOpen.value = true
+  deleteTarget.value = null
+}
+
+const confirmDelete = async () => {
+  const targetId = deleteTarget.value
+  if(!targetId) return;
+
+  const response = await noteStore.deleteNoteAsync(targetId.id)
+  deleteTarget.value = null
+  if (response && detailTarget.value?.id === targetId.id) detailTarget.value = null
+}
+
+const updateNote = async(payload: { title: string; content: string | null }) => {
+  editorError.value = null
+  const target = editorTarget.value
+
+  const ok = target
+      ? await noteStore.updateNoteAsync(target.id, payload)
+      : await noteStore.createNoteAsync(payload)
+
+  if (!ok) {
+    editorError.value = noteStore.error
+    return
+  }
+
+  editorOpen.value = false
+  editorTarget.value = null
+}
+
+
 
 </script>
 
@@ -57,7 +94,9 @@ const detailNote = computed(() => detailTarget.value
           <p class="mt-0.5 text-sm text-gray-500">Create, search and organise your notes.</p>
         </div>
 
-        <button type="button" class="btn-primary" @click="openCreate">New note</button>
+        <button type="button" class="btn-primary" @click="openCreate">
+          + New note
+        </button>
       </div>
 
       <div class="mt-5">
@@ -66,8 +105,8 @@ const detailNote = computed(() => detailTarget.value
             v-model:filter="filter"
             v-model:sort-key="sortValue"
             v-model:sort-direction="sortDirection"
-            :result-count="visibleNotes?.length"
-            :total-count="noteStore.notes?.length"
+            :result-count="visibleNotes?.length ??0"
+            :total-count="noteStore.notes?.length??0"
             :is-filtered="isFiltered"
             @reset="noteStore.resetFilters"
         />
@@ -120,23 +159,23 @@ const detailNote = computed(() => detailTarget.value
           <p class="mx-auto mt-1 max-w-sm text-sm text-gray-500">
             Your first note is one click away.
           </p>
-          <button type="button" class="btn-primary mt-5" @click="openCreate">
-            Create your first note
-          </button>
+<!--          <button type="button" class="btn-primary mt-5" @click="openCreate">
+            Create note
+          </button>-->
         </template>
       </div>
     </main>
 
-    <NoteEditor
+    <NoteCreateUpdateModal
         :open="editorOpen"
         :note="editorTarget"
         :busy="noteStore.saving"
         :error="editorError"
-        @submit="saveNote"
+        @submit="updateNote"
         @close="editorOpen = false"
     />
 
-    <NoteDetail
+    <NoteDetailModal
         :open="!!detailNote"
         :note="detailNote"
         @edit="detailNote && openEdit(detailNote)"

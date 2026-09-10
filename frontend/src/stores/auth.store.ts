@@ -1,7 +1,7 @@
 import {defineStore} from "pinia";
 import {computed, ref} from "vue";
 import type {AuthResponse, LoginRequest, RegisterRequest, UserDto} from "@/types";
-import {toErrorMessage} from "@/lib/axios-client";
+import {toErrorMessage, unwrap} from "@/lib/axios-client";
 import {AuthApi} from "@/api/auth.api";
 import {clearSession, getSession, setSession} from "@/lib/session";
 
@@ -26,22 +26,15 @@ export const useAuthStore = defineStore('auth', () => {
     }
     async function loginAsync (payload: LoginRequest) : Promise<boolean> {
         return run(async () => {
-            const resposnse = await AuthApi.loginAsync(payload);
-
-            if(resposnse.isSuccess){
-                let data = resposnse.data;
-                applySession(data);
-            }
-        }, "")
+            const response = await AuthApi.loginAsync(payload)
+            applySession(unwrap(response, 'Could not sign in.'))
+        }, 'Could not sign in.')
     }
 
     async function registerAsync(payload: RegisterRequest): Promise<boolean> {
         return run(async () => {
-            const resposnse = await AuthApi.registerAsync(payload)
-            if(resposnse.isSuccess){
-                let data = resposnse.data;
-                applySession(data);
-            }
+            const response = await AuthApi.registerAsync(payload)
+            applySession(unwrap(response, 'Could not create the account.'))
         }, 'Could not create the account.')
     }
 

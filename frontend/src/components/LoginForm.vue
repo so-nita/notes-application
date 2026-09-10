@@ -33,7 +33,9 @@ onUnmounted(() => auth.clearError())
 </script>
 
 <template>
+
   <div class="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
+
     <form novalidate @submit.prevent="submit">
       <h1 class="text-2xl font-semibold text-gray-900">Sign in</h1>
       <p class="mt-1 text-sm text-gray-500">Enter your details to continue.</p>
@@ -88,6 +90,14 @@ onUnmounted(() => auth.clearError())
           Create an account
         </RouterLink>
       </p>
+
     </form>
+    <div class="mt-5">
+      <span class="text-slate-400 text-sm">Demo</span>
+      <div class="flex justify-between">
+        <div class="text-gray-400 text-sm">username: <span class="text-gray-500">testing</span></div>
+        <div class="text-slate-400 text-sm">password: <span class="text-gray-500">test@2026</span></div>
+      </div>
+    </div>
   </div>
 </template>

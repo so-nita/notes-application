@@ -1,5 +1,5 @@
 import type { ApiResponse, AuthResponse, LoginRequest, RegisterRequest } from '@/types'
-import { axiosClient, unwrap } from '@/lib/axios-client'
+import { axiosClient } from '@/lib/axios-client'
 
 export const AuthApi = {
     async loginAsync(payload: LoginRequest): Promise<ApiResponse<AuthResponse>> {

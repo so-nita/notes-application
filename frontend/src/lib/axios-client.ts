@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios'
 import { clearSession, getToken } from './session'
-import {ApiResponse} from "../types";
+import type {ApiResponse} from "../types";
 
 export const axiosClient = axios.create({
     baseURL: import.meta.env.DEV ? '' : (import.meta.env.VITE_API_BASE_URL ?? ''),

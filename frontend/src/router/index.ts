@@ -7,23 +7,28 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            name: "note",
+            name: "notes",
             meta: {
-                requireAuth: true,
+                requiresAuth: true,
+                title: 'Your notes',
             },
             component: () => import("@/views/NoteView.vue")
         },
         {
-            path: '/',
+            path: '/login',
             name: "login",
-            meta: { guestOnly: true },
+            meta: { guestOnly: true, title: 'Sign in' },
             component: () => import("@/views/LoginView.vue")
         },
         {
-            path: '/',
+            path: '/register',
             name: "register",
-            meta: { guestOnly: true },
+            meta: { guestOnly: true, title: 'Create an account' },
             component: () => import("@/views/RegisterView.vue")
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            redirect: { name: 'notes' },
         }
     ]
 });
