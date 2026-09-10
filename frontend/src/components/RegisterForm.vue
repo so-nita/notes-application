@@ -55,7 +55,7 @@ onUnmounted(() => auth.clearError())
             v-model="form.fullName"
             type="text"
             autocomplete="name"
-            placeholder="Jane Doe"
+            placeholder="Enter name"
             class="field"
         />
       </div>
@@ -68,7 +68,7 @@ onUnmounted(() => auth.clearError())
             type="text"
             autocomplete="username"
             maxlength="50"
-            placeholder="jane.doe"
+            placeholder="Enter username"
             class="field"
             :aria-invalid="submitted && !!errors.username"
         />
