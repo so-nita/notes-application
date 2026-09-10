@@ -26,6 +26,13 @@ public static class ApplicationExtension
         builder.Services.AddScoped<INoteService, NoteService>();
         
         builder.Services.AddHttpContextAccessor();
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAll", policy =>
+            {
+                policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+            });
+        });
 
         var jwtSettings = configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>();
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
